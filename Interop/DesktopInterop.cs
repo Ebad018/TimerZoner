@@ -7,49 +7,48 @@ namespace TimeZoner.Interop;
 
 public static class DesktopInterop
 {
-    [DllImport("user32.dll", SetLastError = true)]
-    static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-    [DllImport("user32.dll", SetLastError = true)]
-    static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
-
     [DllImport("user32.dll")]
-    static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+    static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+    
+    static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+    const uint SWP_NOSIZE = 0x0001;
+    const uint SWP_NOMOVE = 0x0002;
+    const uint SWP_NOACTIVATE = 0x0010;
+    const int WM_WINDOWPOSCHANGING = 0x0046;
 
-    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-    static extern IntPtr SendMessageTimeout(IntPtr windowHandle, uint Msg, IntPtr wParam, IntPtr lParam, uint flags, uint timeout, out IntPtr result);
-
-    delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
-
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WINDOWPOS
+    {
+        public IntPtr hwnd;
+        public IntPtr hwndInsertAfter;
+        public int x;
+        public int y;
+        public int cx;
+        public int cy;
+        public uint flags;
+    }
 
     public static void PinToDesktop(Window window)
     {
-        IntPtr hWnd = new WindowInteropHelper(window).Handle;
+        var hwnd = new WindowInteropHelper(window).Handle;
         
-        // Find Progman
-        IntPtr progman = FindWindow("Progman", null);
+        // Initial push to bottom
+        SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
         
-        // Send message to spawn WorkerW
-        IntPtr result = IntPtr.Zero;
-        SendMessageTimeout(progman, 0x052C, new IntPtr(0), IntPtr.Zero, 0x0, 1000, out result);
-        
-        IntPtr workerW = IntPtr.Zero;
-        EnumWindows(new EnumWindowsProc((tophandle, topparamhandle) =>
+        // Hook to intercept window position changes
+        HwndSource source = HwndSource.FromHwnd(hwnd);
+        source.AddHook(new HwndSourceHook(WndProc));
+    }
+
+    private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WM_WINDOWPOSCHANGING)
         {
-            IntPtr p = FindWindowEx(tophandle, IntPtr.Zero, "SHELLDLL_DefView", null);
-            if (p != IntPtr.Zero)
-            {
-                workerW = FindWindowEx(IntPtr.Zero, tophandle, "WorkerW", null);
-            }
-            return true;
-        }), IntPtr.Zero);
-        
-        if (workerW == IntPtr.Zero) 
-            workerW = progman; // Fallback
-            
-        SetParent(hWnd, workerW);
+            WINDOWPOS wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+            // Ensure the window doesn't try to go above HWND_BOTTOM
+            wp.hwndInsertAfter = HWND_BOTTOM;
+            Marshal.StructureToPtr(wp, lParam, false);
+        }
+        return IntPtr.Zero;
     }
 }
