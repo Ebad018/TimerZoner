@@ -1,0 +1,41 @@
+<Window x:Class="TimeZoner.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TimeZoner Settings" Height="400" Width="400"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Topmost="True">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Text="TimeZoner Settings" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <CheckBox Content="24-Hour Format" IsChecked="{Binding Is24HourFormat}" Margin="0,0,20,0" VerticalAlignment="Center"/>
+            <CheckBox Content="Auto-start with Windows" IsChecked="{Binding AutoStart}" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <GroupBox Grid.Row="2" Header="Cities (Max 5)" Margin="0,0,0,15">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <ListBox ItemsSource="{Binding Cities}" DisplayMemberPath="Name" Margin="0,0,0,10"/>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Add UTC" Width="80" Margin="0,0,10,0" Click="AddCity_Click" Padding="5"/>
+                    <Button Content="Remove" Width="80" Click="RemoveCity_Click" Padding="5"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Save" Width="80" Margin="0,0,10,0" Click="Save_Click" IsDefault="True" Padding="5"/>
+            <Button Content="Cancel" Width="80" Click="Cancel_Click" IsCancel="True" Padding="5"/>
+        </StackPanel>
+    </Grid>
+</Window>
