@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace TimeZoner;
 
-public partial class App : Application
+public partial class App : System.Windows.Application
 {
     private static Mutex? _mutex = null;
     private System.Windows.Forms.NotifyIcon? _notifyIcon;
@@ -20,7 +20,7 @@ public partial class App : Application
         if (!createdNew)
         {
             // App is already running, exit immediately
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
             return;
         }
 
@@ -42,7 +42,7 @@ public partial class App : Application
         };
         
         var exitItem = new System.Windows.Forms.ToolStripMenuItem("Exit");
-        exitItem.Click += (s, args) => Application.Current.Shutdown();
+        exitItem.Click += (s, args) => System.Windows.Application.Current.Shutdown();
 
         contextMenu.Items.Add(settingsItem);
         contextMenu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
