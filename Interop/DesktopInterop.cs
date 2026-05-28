@@ -44,10 +44,14 @@ public static class DesktopInterop
     {
         if (msg == WM_WINDOWPOSCHANGING)
         {
-            WINDOWPOS wp = (WINDOWPOS)Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
-            // Ensure the window doesn't try to go above HWND_BOTTOM
-            wp.hwndInsertAfter = HWND_BOTTOM;
-            Marshal.StructureToPtr(wp, lParam, false);
+            var ptr = Marshal.PtrToStructure(lParam, typeof(WINDOWPOS));
+            if (ptr != null)
+            {
+                WINDOWPOS wp = (WINDOWPOS)ptr;
+                // Ensure the window doesn't try to go above HWND_BOTTOM
+                wp.hwndInsertAfter = HWND_BOTTOM;
+                Marshal.StructureToPtr(wp, lParam, false);
+            }
         }
         return IntPtr.Zero;
     }

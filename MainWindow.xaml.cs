@@ -35,6 +35,6 @@ public partial class MainWindow : Window
 
     private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
+        System.Windows.Application.Current.Shutdown();
     }
 }

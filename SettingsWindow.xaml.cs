@@ -18,7 +18,7 @@ public partial class SettingsWindow : Window
     {
         SettingsManager.SaveSettings(currentSettings);
         Interop.StartupManager.SetAutoStart(currentSettings.AutoStart);
-        MessageBox.Show("Settings saved! Please restart the app to apply changes.", "TimeZoner", MessageBoxButton.OK, MessageBoxImage.Information);
+        System.Windows.MessageBox.Show("Settings saved! Please restart the app to apply changes.", "TimeZoner", MessageBoxButton.OK, MessageBoxImage.Information);
         Close();
     }
 
@@ -31,7 +31,7 @@ public partial class SettingsWindow : Window
     {
         if (currentSettings.Cities.Count >= 5)
         {
-            MessageBox.Show("Maximum of 5 cities allowed.");
+            System.Windows.MessageBox.Show("Maximum of 5 cities allowed.");
             return;
         }
         
