@@ -27,7 +27,7 @@ public partial class SettingsWindow : Window
         Close();
     }
 
-    private void AddCity_Click(object sender, RoutedEventArgs e)
+    private void AddHome_Click(object sender, RoutedEventArgs e)
     {
         if (currentSettings.Cities.Count >= 5)
         {
@@ -35,7 +35,23 @@ public partial class SettingsWindow : Window
             return;
         }
         
-        currentSettings.Cities.Add(new CityConfig { Name = "New City (UTC)", TimeZoneId = "UTC", Latitude = 0, Longitude = 0 });
+        currentSettings.Cities.Add(new CityConfig { Name = "Home (Local Time)", TimeZoneId = System.TimeZoneInfo.Local.Id, Latitude = 0, Longitude = 0 });
+    }
+
+    private void SearchCity_Click(object sender, RoutedEventArgs e)
+    {
+        if (currentSettings.Cities.Count >= 5)
+        {
+            System.Windows.MessageBox.Show("Maximum of 5 cities allowed.");
+            return;
+        }
+        
+        var addCityWindow = new AddCityWindow();
+        addCityWindow.Owner = this;
+        if (addCityWindow.ShowDialog() == true && addCityWindow.SelectedCity != null)
+        {
+            currentSettings.Cities.Add(addCityWindow.SelectedCity);
+        }
     }
 
     private void RemoveCity_Click(object sender, RoutedEventArgs e)

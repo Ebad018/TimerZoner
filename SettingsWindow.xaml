@@ -27,8 +27,9 @@
                 </Grid.RowDefinitions>
                 <ListBox ItemsSource="{Binding Cities}" DisplayMemberPath="Name" Margin="0,0,0,10"/>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Add UTC" Width="80" Margin="0,0,10,0" Click="AddCity_Click" Padding="5"/>
-                    <Button Content="Remove" Width="80" Click="RemoveCity_Click" Padding="5"/>
+                    <Button Content="Add Home" Width="70" Margin="0,0,5,0" Click="AddHome_Click" Padding="5"/>
+                    <Button Content="Search City" Width="80" Margin="0,0,10,0" Click="SearchCity_Click" Padding="5"/>
+                    <Button Content="Remove" Width="60" Click="RemoveCity_Click" Padding="5"/>
                 </StackPanel>
             </Grid>
         </GroupBox>
